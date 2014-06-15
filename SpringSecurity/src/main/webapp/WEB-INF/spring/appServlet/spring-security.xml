@@ -1,0 +1,54 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	http://www.springframework.org/schema/security
+	http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+	
+	
+		<http auto-config="true">
+		<intercept-url pattern="/welcome*" access="ROLE_USER" />
+		<intercept-url pattern="/java" access="ROLE_USER" />
+		
+		<form-login login-page="/login" default-target-url="/welcome"
+			authentication-failure-url="/loginfailed" />
+		<logout logout-success-url="/logout" />
+		
+	</http>
+<!-- 
+	<authentication-manager>
+		<authentication-provider>
+			<jdbc-user-service data-source-ref="dataSource"
+				users-by-username-query="
+					select username,password, enabled 
+					from users where USERNAME=?"
+
+				authorities-by-username-query="
+					select u.username, ur.authority from users u, user_roles ur 
+					where u.user_id = ur.user_id and u.username =?  " />
+		</authentication-provider>
+	</authentication-manager>
+	
+-->
+	
+	<!-- CustomUserDetailsService for Authentication  -->
+	<beans:bean id="customUserDetailsService" class="com.spring.security.MyUserDetailsService">
+    <beans:property name="dataSource" ref="dataSource" />
+    </beans:bean>
+
+	<authentication-manager>
+		<authentication-provider user-service-ref="customUserDetailsService" />
+	</authentication-manager>
+
+	
+	<beans:bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<beans:property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<beans:property name="username" value="root" />
+		<beans:property name="password" value="" />
+		<beans:property name="url" value="jdbc:mysql://localhost:3306/taj" />
+	</beans:bean>
+	
+	
+
+</beans:beans>
